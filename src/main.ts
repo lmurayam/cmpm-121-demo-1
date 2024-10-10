@@ -10,7 +10,7 @@ header.innerHTML = gameName;
 app.append(header);
 
 const mainButton = document.createElement("button");
-mainButton.innerHTML = `<span style='font-size: ${screen.width/5}px;'> 🍜 </span>`;
+mainButton.innerHTML = `<span style='font-size: ${screen.width / 5}px;'> 🍜 </span>`;
 app.append(mainButton);
 
 mainButton.addEventListener("click", () => {
@@ -26,46 +26,28 @@ const growthRateText = document.createElement("div");
 growthRateText.innerHTML = `${growthRate.toFixed(2)} Bowls/Second`;
 app.append(growthRateText);
 
-interface IUpgrade {
+interface Item {
   icon: string;
   description: string;
   cost: number;
   effect: number;
   amount: number;
+  button: HTMLButtonElement|null;
 }
 
-const chopstick: IUpgrade = {
-  icon: "🥢",
-  description: "Chopsticks",
-  cost: 10,
-  effect: 0.1,
-  amount: 0,
-};
 
-const narutomaki: IUpgrade = {
-  icon: "🍥",
-  description: "Narutomaki",
-  cost: 100,
-  effect: 2,
-  amount: 0,
-};
+const availableItems : Item[] = [
+  {icon: "🥢", description: "Chopsticks", cost: 10, effect: 0.1, amount: 0,button: null},
+  {icon: "🍥", description: "Narutomaki", cost: 100, effect: 2, amount: 0,button: null},
+  {icon: "🥩", description: "Meat", cost: 1000, effect: 50, amount: 0,button: null},
+];
 
-const meat: IUpgrade = {
-  icon: "🥩",
-  description: "Meat",
-  cost: 1000,
-  effect: 50,
-  amount: 0,
-};
-
-const upgrades: [IUpgrade, HTMLButtonElement, number][] = [];
-
-function createUpgrade(upgradeConfig: IUpgrade) {
+function createUpgrade(upgradeConfig: Item) {
   const upgradeButton = document.createElement("button");
   upgradeButton.innerHTML = `${upgradeConfig.amount} ${upgradeConfig.icon} Cost: ${upgradeConfig.cost.toFixed(2)} Increase: ${upgradeConfig.effect}`;
   app.append(upgradeButton);
 
-  upgrades.push([upgradeConfig, upgradeButton, 0]);
+  upgradeConfig.button = upgradeButton;
 
   upgradeButton.addEventListener("click", () => {
     upgradeConfig.amount += 1;
@@ -80,16 +62,16 @@ function createUpgrade(upgradeConfig: IUpgrade) {
   });
 }
 
-createUpgrade(chopstick);
-createUpgrade(narutomaki);
-createUpgrade(meat);
-
 function updateCounter(x: number) {
   counter += x;
   counterText.innerHTML = `Number of Bowls: ${counter.toFixed(2)}`;
 }
 
 updateCounter(0);
+
+availableItems.forEach((upgrade)=>{
+  createUpgrade(upgrade);
+});
 
 let lastTime: number = performance.now();
 
@@ -98,9 +80,9 @@ function tick() {
   lastTime = performance.now();
   updateCounter(elapsedTime * growthRate);
 
-  upgrades.forEach((upgrade) => {
-    upgrade[1].disabled = counter < upgrade[0].cost;
-  });
+  availableItems.forEach((upgrade)=>{
+    if(upgrade.button!=null) upgrade.button.disabled = counter < upgrade.cost;
+  })
 
   requestAnimationFrame(tick);
 }
