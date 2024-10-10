@@ -32,19 +32,56 @@ interface Item {
   cost: number;
   effect: number;
   amount: number;
-  button: HTMLButtonElement|null;
+  button: HTMLButtonElement | null;
 }
 
-
-const availableItems : Item[] = [
-  {icon: "🥢", description: "Chopsticks", cost: 10, effect: 0.1, amount: 0,button: null},
-  {icon: "🍥", description: "Narutomaki", cost: 100, effect: 2, amount: 0,button: null},
-  {icon: "🥩", description: "Meat", cost: 1000, effect: 50, amount: 0,button: null},
+const availableItems: Item[] = [
+  {
+    icon: "🥢",
+    description: "Chopsticks, also used for making music",
+    cost: 10,
+    effect: 0.1,
+    amount: 0,
+    button: null,
+  },
+  {
+    icon: "🍥",
+    description: "Narutomaki, makes you feel like an anime protagonist",
+    cost: 100,
+    effect: 2,
+    amount: 0,
+    button: null,
+  },
+  {
+    icon: "🍣",
+    description: "Sushi, an excellent appetizer",
+    cost: 500,
+    effect: 20,
+    amount: 0,
+    button: null,
+  },
+  {
+    icon: "🥩",
+    description: "Meat, essential to a good bowl of noodles",
+    cost: 1000,
+    effect: 50,
+    amount: 0,
+    button: null,
+  },
+  {
+    icon: "🍱",
+    description: "Bento Box, something to take to go?",
+    cost: 10000,
+    effect: 1000,
+    amount: 0,
+    button: null,
+  },
 ];
 
 function createUpgrade(upgradeConfig: Item) {
   const upgradeButton = document.createElement("button");
   upgradeButton.innerHTML = `${upgradeConfig.amount} ${upgradeConfig.icon} Cost: ${upgradeConfig.cost.toFixed(2)} Increase: ${upgradeConfig.effect}`;
+  upgradeButton.title = upgradeConfig.description;
   app.append(upgradeButton);
 
   upgradeConfig.button = upgradeButton;
@@ -69,7 +106,7 @@ function updateCounter(x: number) {
 
 updateCounter(0);
 
-availableItems.forEach((upgrade)=>{
+availableItems.forEach((upgrade) => {
   createUpgrade(upgrade);
 });
 
@@ -80,9 +117,10 @@ function tick() {
   lastTime = performance.now();
   updateCounter(elapsedTime * growthRate);
 
-  availableItems.forEach((upgrade)=>{
-    if(upgrade.button!=null) upgrade.button.disabled = counter < upgrade.cost;
-  })
+  availableItems.forEach((upgrade) => {
+    if (upgrade.button != null)
+      upgrade.button.disabled = counter < upgrade.cost;
+  });
 
   requestAnimationFrame(tick);
 }
