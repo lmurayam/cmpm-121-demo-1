@@ -26,44 +26,64 @@ const growthRateText = document.createElement("div");
 growthRateText.innerHTML = `${growthRate.toFixed(2)} Bowls/Second`;
 app.append(growthRateText);
 
-interface IUpgrade{
-  icon : string;
-  description : string;
-  cost : number;
-  effect : number;
+interface IUpgrade {
+  icon: string;
+  description: string;
+  cost: number;
+  effect: number;
+  amount: number;
 }
 
-const upgrades : [IUpgrade,HTMLButtonElement,number][] = [];
+const chopstick : IUpgrade = {
+  icon: "🥢",
+  description: "Chopsticks",
+  cost: 10,
+  effect: 0.1,
+  amount: 0,
+};
 
-function createUpgrade( upgradeConfig : IUpgrade){
+const narutomaki : IUpgrade = {
+  icon: "🍥",
+  description: "Narutomaki",
+  cost: 100,
+  effect: 2,
+  amount: 0,
+};
+
+const meat : IUpgrade = {
+  icon: "🥩",
+  description: "Meat",
+  cost: 1000,
+  effect: 50,
+  amount: 0,
+};
+
+const upgrades: [IUpgrade, HTMLButtonElement, number][] = [];
+
+function createUpgrade(upgradeConfig: IUpgrade) {
   const upgradeButton = document.createElement("button");
-  upgradeButton.innerHTML = `0 ${upgradeConfig.icon} ${upgradeConfig.description}`;
+  upgradeButton.innerHTML = `${upgradeConfig.amount} ${upgradeConfig.icon} Cost: ${upgradeConfig.cost.toFixed(2)} Increase: ${upgradeConfig.effect}`;
   app.append(upgradeButton);
 
-  upgrades.push([upgradeConfig,upgradeButton,0]);
+  upgrades.push([upgradeConfig, upgradeButton, 0]);
 
   upgradeButton.addEventListener("click", () => {
-    upgrades.forEach((upgrade)=>{
-      if(upgrade[0]==upgradeConfig){
-        upgrade[2]+=1;
-        upgradeButton.innerHTML = `${upgrade[2]} ${upgradeConfig.icon} ${upgradeConfig.description}`;
-      }
-    });
 
+    upgradeConfig.amount+=1;
 
-
-    growthRate+=upgradeConfig.effect;
+    growthRate += upgradeConfig.effect;
     counter -= upgradeConfig.cost;
-    growthRateText.innerHTML  = `${growthRate.toFixed(2)} Bowls/Second`;
+
+    upgradeConfig.cost*=1.15;
+    growthRateText.innerHTML = `${growthRate.toFixed(2)} Bowls/Second`;
+
+    upgradeButton.innerHTML = `${upgradeConfig.amount} ${upgradeConfig.icon} Cost: ${upgradeConfig.cost.toFixed(2)} Increase: ${upgradeConfig.effect}`;
   });
 }
 
-createUpgrade({icon:"🥢",description:"Cost: 10 Increase: 0.1",cost:10,effect:.1})
-createUpgrade({icon:"🍥",description:"Cost: 100 Increase: 2",cost:100,effect:2})
-createUpgrade({icon:"🥩",description:"Cost: 1000 Increase: 50",cost:1000,effect:50})
-
-
-
+createUpgrade(chopstick);
+createUpgrade(narutomaki);
+createUpgrade(meat);
 
 function updateCounter(x: number) {
   counter += x;
@@ -79,9 +99,9 @@ function tick() {
   lastTime = performance.now();
   updateCounter(elapsedTime * growthRate);
 
-  upgrades.forEach((upgrade)=>{
-    upgrade[1].disabled = counter<upgrade[0].cost;
-  })
+  upgrades.forEach((upgrade) => {
+    upgrade[1].disabled = counter < upgrade[0].cost;
+  });
 
   requestAnimationFrame(tick);
 }
