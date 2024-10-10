@@ -10,7 +10,7 @@ header.innerHTML = gameName;
 app.append(header);
 
 const mainButton = document.createElement("button");
-mainButton.innerHTML = "🍜";
+mainButton.innerHTML = `<span style='font-size: ${screen.width/5}px;'> 🍜 </span>`;
 app.append(mainButton);
 
 mainButton.addEventListener("click", () => {
@@ -34,7 +34,7 @@ interface IUpgrade {
   amount: number;
 }
 
-const chopstick : IUpgrade = {
+const chopstick: IUpgrade = {
   icon: "🥢",
   description: "Chopsticks",
   cost: 10,
@@ -42,7 +42,7 @@ const chopstick : IUpgrade = {
   amount: 0,
 };
 
-const narutomaki : IUpgrade = {
+const narutomaki: IUpgrade = {
   icon: "🍥",
   description: "Narutomaki",
   cost: 100,
@@ -50,7 +50,7 @@ const narutomaki : IUpgrade = {
   amount: 0,
 };
 
-const meat : IUpgrade = {
+const meat: IUpgrade = {
   icon: "🥩",
   description: "Meat",
   cost: 1000,
@@ -68,13 +68,12 @@ function createUpgrade(upgradeConfig: IUpgrade) {
   upgrades.push([upgradeConfig, upgradeButton, 0]);
 
   upgradeButton.addEventListener("click", () => {
-
-    upgradeConfig.amount+=1;
+    upgradeConfig.amount += 1;
 
     growthRate += upgradeConfig.effect;
     counter -= upgradeConfig.cost;
 
-    upgradeConfig.cost*=1.15;
+    upgradeConfig.cost *= 1.15;
     growthRateText.innerHTML = `${growthRate.toFixed(2)} Bowls/Second`;
 
     upgradeButton.innerHTML = `${upgradeConfig.amount} ${upgradeConfig.icon} Cost: ${upgradeConfig.cost.toFixed(2)} Increase: ${upgradeConfig.effect}`;
