@@ -2,29 +2,29 @@ import "./style.css";
 
 const app: HTMLDivElement = document.querySelector("#app")!;
 
-const gameName = "Noodle Shop";
-document.title = gameName;
+function initializeHtml(){
+  const gameName = "Noodle Shop";
+  document.title = gameName;
 
-const header = document.createElement("h1");
-header.innerHTML = gameName;
-app.append(header);
+  const header = document.createElement("h1");
+  header.innerHTML = gameName;
+  app.append(header);
 
-const mainButton = document.createElement("button");
-mainButton.innerHTML = `<span style='font-size: ${screen.width / 5}px;'> 🍜 </span>`;
-app.append(mainButton);
+  const mainButton = document.createElement("button");
+  mainButton.innerHTML = `<span style='font-size: ${screen.width / 5}px;'> 🍜 </span>`;
+  app.append(mainButton);
 
-mainButton.addEventListener("click", () => {
-  updateCounter(1);
-});
+  mainButton.addEventListener("click", () => {
+    updateCounter(1);
+  });
 
-let counter: number = 0;
-const counterText = document.createElement("div");
-app.append(counterText);
+  counterText = document.createElement("div");
+  app.append(counterText);
 
-let growthRate: number = 0;
-const growthRateText = document.createElement("div");
-growthRateText.innerHTML = `${growthRate.toFixed(2)} Bowls/Second`;
-app.append(growthRateText);
+  growthRateText = document.createElement("div");
+  growthRateText.innerHTML = `0 Bowls/Second`;
+  app.append(growthRateText);
+}
 
 interface Item {
   icon: string;
@@ -34,6 +34,69 @@ interface Item {
   amount: number;
   button: HTMLButtonElement | null;
 }
+
+function updateGrowthText(){
+  growthRateText.innerHTML = `${growthRate.toFixed(2)} Bowls/Second`;
+}
+
+function createUpgrade(upgradeConfig: Item) {
+  const upgradeButton = document.createElement("button");
+  upgradeButton.innerHTML = `${upgradeConfig.amount} ${upgradeConfig.icon} Cost: ${upgradeConfig.cost.toFixed(2)} Increase: ${upgradeConfig.effect}`;
+  upgradeButton.title = upgradeConfig.description;
+  app.append(upgradeButton);
+
+  upgradeConfig.button = upgradeButton;
+
+  upgradeButton.addEventListener("click", () => {
+    upgradeConfig.amount += 1;
+
+    growthRate += upgradeConfig.effect;
+    counter -= upgradeConfig.cost;
+
+    upgradeConfig.cost *= 1.15;
+    updateGrowthText();
+
+    upgradeButton.innerHTML = `${upgradeConfig.amount} ${upgradeConfig.icon} Cost: ${upgradeConfig.cost.toFixed(2)} Increase: ${upgradeConfig.effect}`;
+  });
+}
+
+function updateCounter(x: number) {
+  counter += x;
+  counterText.innerHTML = `Number of Bowls: ${counter.toFixed(2)}`;
+}
+
+function checkUpgradeButton(upgrade : Item){
+  if(upgrade.button != null){
+    upgrade.button.disabled = counter < upgrade.cost;
+  }
+}
+
+function tick() {
+  const elapsedTime: number = (performance.now() - lastTime) / 1000;
+  lastTime = performance.now();
+  updateCounter(elapsedTime * growthRate);
+  availableItems.forEach((upgrade) => {
+    checkUpgradeButton(upgrade);
+  });
+  requestAnimationFrame(tick);
+}
+
+function initializeGame(){
+  updateCounter(0);
+
+  availableItems.forEach((upgrade) => {
+    createUpgrade(upgrade);
+  });
+}
+
+
+let counter: number = 0;
+let growthRate: number = 0;
+
+let counterText : HTMLElement;
+let growthRateText : HTMLElement;
+
+let lastTime: number = performance.now();
 
 const availableItems: Item[] = [
   {
@@ -78,50 +141,7 @@ const availableItems: Item[] = [
   },
 ];
 
-function createUpgrade(upgradeConfig: Item) {
-  const upgradeButton = document.createElement("button");
-  upgradeButton.innerHTML = `${upgradeConfig.amount} ${upgradeConfig.icon} Cost: ${upgradeConfig.cost.toFixed(2)} Increase: ${upgradeConfig.effect}`;
-  upgradeButton.title = upgradeConfig.description;
-  app.append(upgradeButton);
+initializeHtml();
+initializeGame();
 
-  upgradeConfig.button = upgradeButton;
-
-  upgradeButton.addEventListener("click", () => {
-    upgradeConfig.amount += 1;
-
-    growthRate += upgradeConfig.effect;
-    counter -= upgradeConfig.cost;
-
-    upgradeConfig.cost *= 1.15;
-    growthRateText.innerHTML = `${growthRate.toFixed(2)} Bowls/Second`;
-
-    upgradeButton.innerHTML = `${upgradeConfig.amount} ${upgradeConfig.icon} Cost: ${upgradeConfig.cost.toFixed(2)} Increase: ${upgradeConfig.effect}`;
-  });
-}
-
-function updateCounter(x: number) {
-  counter += x;
-  counterText.innerHTML = `Number of Bowls: ${counter.toFixed(2)}`;
-}
-
-updateCounter(0);
-
-availableItems.forEach((upgrade) => {
-  createUpgrade(upgrade);
-});
-
-let lastTime: number = performance.now();
-
-function tick() {
-  const elapsedTime: number = (performance.now() - lastTime) / 1000;
-  lastTime = performance.now();
-  updateCounter(elapsedTime * growthRate);
-
-  availableItems.forEach((upgrade) => {
-    if (upgrade.button != null)
-      upgrade.button.disabled = counter < upgrade.cost;
-  });
-
-  requestAnimationFrame(tick);
-}
 requestAnimationFrame(tick);
