@@ -2,7 +2,7 @@ import "./style.css";
 
 const app: HTMLDivElement = document.querySelector("#app")!;
 
-function initializeHtml(){
+function initializeHtml() {
   const gameName = "Noodle Shop";
   document.title = gameName;
 
@@ -11,8 +11,15 @@ function initializeHtml(){
   app.append(header);
 
   const mainButton = document.createElement("button");
-  mainButton.innerHTML = `<span style='font-size: ${screen.width / 5}px;'> 🍜 </span>`;
+  mainButton.innerHTML = `<span style='font-size: ${screen.width / 5}px; line-height: ${screen.width / 6}px; vertical-align: top;'>🍜</span>`;
   app.append(mainButton);
+
+  mainButton.style.backgroundColor = colors[2];
+
+  mainButton.style.width = `${screen.width / 4}px`;
+  mainButton.style.height = `${screen.width / 4}px`;
+  mainButton.style.borderRadius = "60%";
+  mainButton.style.outline = "none";
 
   mainButton.addEventListener("click", () => {
     updateCounter(1);
@@ -35,7 +42,7 @@ interface Item {
   button: HTMLButtonElement | null;
 }
 
-function updateGrowthText(){
+function updateGrowthText() {
   growthRateText.innerHTML = `${growthRate.toFixed(2)} Bowls/Second`;
 }
 
@@ -44,6 +51,8 @@ function createUpgrade(upgradeConfig: Item) {
   upgradeButton.innerHTML = `${upgradeConfig.amount} ${upgradeConfig.icon} Cost: ${upgradeConfig.cost.toFixed(2)} Increase: ${upgradeConfig.effect}`;
   upgradeButton.title = upgradeConfig.description;
   app.append(upgradeButton);
+
+  upgradeButton.style.backgroundColor = colors[1];
 
   upgradeConfig.button = upgradeButton;
 
@@ -65,8 +74,8 @@ function updateCounter(x: number) {
   counterText.innerHTML = `Number of Bowls: ${counter.toFixed(2)}`;
 }
 
-function checkUpgradeButton(upgrade : Item){
-  if(upgrade.button != null){
+function checkUpgradeButton(upgrade: Item) {
+  if (upgrade.button != null) {
     upgrade.button.disabled = counter < upgrade.cost;
   }
 }
@@ -81,7 +90,7 @@ function tick() {
   requestAnimationFrame(tick);
 }
 
-function initializeGame(){
+function initializeGame() {
   updateCounter(0);
 
   availableItems.forEach((upgrade) => {
@@ -89,12 +98,11 @@ function initializeGame(){
   });
 }
 
-
 let counter: number = 0;
 let growthRate: number = 0;
 
-let counterText : HTMLElement;
-let growthRateText : HTMLElement;
+let counterText: HTMLElement;
+let growthRateText: HTMLElement;
 
 let lastTime: number = performance.now();
 
@@ -140,6 +148,10 @@ const availableItems: Item[] = [
     button: null,
   },
 ];
+
+const colors: string[] = ["#5C4033","#483C32","#000000"]
+
+document.body.style.backgroundColor = colors[0];
 
 initializeHtml();
 initializeGame();
